@@ -131,6 +131,12 @@ IMPORTANT: Write the FULL review to ${REVIEW_FILE}. You must create that file."
     CODEX_EXIT=0
     START_TIME=$(date +%s)
 
+    # If REVIEW_LOOP_OPENAI_API_KEY is set, use it as OPENAI_API_KEY for codex.
+    if [ -n "${REVIEW_LOOP_OPENAI_API_KEY:-}" ]; then
+      export OPENAI_API_KEY="$REVIEW_LOOP_OPENAI_API_KEY"
+      log "Using REVIEW_LOOP_OPENAI_API_KEY as OPENAI_API_KEY for Codex"
+    fi
+
     if command -v codex &> /dev/null; then
       log "Starting Codex review (flags: $CODEX_FLAGS)"
       # shellcheck disable=SC2086

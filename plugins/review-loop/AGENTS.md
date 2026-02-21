@@ -21,6 +21,7 @@ A Claude Code plugin that creates a two-phase review loop:
 
 - Review IDs are validated against `^[0-9]{8}-[0-9]{6}-[0-9a-f]{6}$` to prevent path traversal
 - Codex flags are configurable via `REVIEW_LOOP_CODEX_FLAGS` env var
+- The OpenAI API key for Codex can be supplied via `REVIEW_LOOP_OPENAI_API_KEY`; it is exported as `OPENAI_API_KEY` only for the duration of the codex invocation and is never stored in state files or logs
 - No secrets or credentials are stored in state files
 
 ## Testing
