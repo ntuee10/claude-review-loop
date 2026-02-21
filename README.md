@@ -105,6 +105,7 @@ The stop hook timeout is set to 900 seconds (15 minutes) in `hooks/hooks.json`. 
 
 | Variable | Default | Description |
 |----------|---------|-------------|
+| `REVIEW_LOOP_OPENAI_API_KEY` | _(none)_ | OpenAI API key for Codex CLI. If set, it takes precedence over `OPENAI_API_KEY`. |
 | `REVIEW_LOOP_CODEX_FLAGS` | `--dangerously-bypass-approvals-and-sandbox` | Flags passed to `codex`. Set to `--sandbox workspace-write` for safer sandboxed reviews. |
 
 ### Telemetry

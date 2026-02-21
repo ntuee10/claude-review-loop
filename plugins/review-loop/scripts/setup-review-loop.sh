@@ -18,7 +18,8 @@ Starts a review loop:
   3. Claude addresses the feedback
 
 Environment variables:
-  REVIEW_LOOP_CODEX_FLAGS  Override codex flags (default: --dangerously-bypass-approvals-and-sandbox)
+  REVIEW_LOOP_OPENAI_API_KEY  OpenAI API key for Codex CLI (falls back to OPENAI_API_KEY if not set)
+  REVIEW_LOOP_CODEX_FLAGS     Override codex flags (default: --dangerously-bypass-approvals-and-sandbox)
 
 Example:
   /review-loop Add user authentication with JWT tokens and proper test coverage
@@ -44,6 +45,11 @@ fi
 if ! command -v codex &> /dev/null; then
   echo "Warning: 'codex' CLI not found. The review phase will fall back to self-review."
   echo "Install Codex CLI to enable independent code reviews."
+else
+  # Codex is installed — warn if no API key is configured
+  if [ -z "${REVIEW_LOOP_OPENAI_API_KEY:-}" ] && [ -z "${OPENAI_API_KEY:-}" ]; then
+    echo "Warning: No OpenAI API key found. Set REVIEW_LOOP_OPENAI_API_KEY (or OPENAI_API_KEY) so Codex can authenticate."
+  fi
 fi
 
 if ! command -v jq &> /dev/null; then
