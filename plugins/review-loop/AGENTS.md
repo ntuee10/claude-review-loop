@@ -2,10 +2,12 @@
 
 ## What this is
 
-A Claude Code plugin that creates a two-phase review loop:
+A Claude Code plugin that creates a three-phase review loop with two-way communication:
 1. Claude implements a task
 2. Codex independently reviews the changes
-3. Claude addresses the review feedback
+3. Claude addresses the review feedback, documenting any disagreements
+4. If disagreements exist: Codex responds to Claude's counter-arguments (round 2)
+5. Claude Teams reviews both rounds and makes a final arbitration call
 
 ## Conventions
 
@@ -13,9 +15,11 @@ A Claude Code plugin that creates a two-phase review loop:
 - The stop hook MUST always produce valid JSON to stdout — never let non-JSON text leak
 - Fail-open: on any error, approve exit rather than trapping the user
 - State lives in `.claude/review-loop.local.md` — always clean up on exit
+- Escalations live in `.claude/review-loop.escalations.md` — always clean up on exit
 - Review ID format: `YYYYMMDD-HHMMSS-hexhex` — validate before using in paths
 - Codex stdout/stderr is redirected away from hook stdout to prevent JSON corruption
 - Telemetry goes to `.claude/review-loop.log` — structured, timestamped lines
+- Round 2 escalation review is written to `reviews/review-<id>-r2.md`
 
 ## Security constraints
 
@@ -25,7 +29,13 @@ A Claude Code plugin that creates a two-phase review loop:
 
 ## Testing
 
-- After modifying stop-hook.sh, test all three paths: no-state, task→addressing, addressing→approve
+- After modifying stop-hook.sh, test all five paths:
+  1. no-state → approve
+  2. task → addressing (Codex review written)
+  3. addressing without escalations file → approve
+  4. addressing with escalations file → Codex round 2 → escalating
+  5. escalating → approve
 - Verify JSON output with `jq .` for each path
-- Test with codex unavailable (should fall back to self-review prompt)
+- Test with codex unavailable (should fall back to self-review prompt / skip escalation)
 - Test with malformed state files (should fail-open)
+- Test three-entity scenario: Claude disagreement → Codex counter → Claude Teams arbitration
